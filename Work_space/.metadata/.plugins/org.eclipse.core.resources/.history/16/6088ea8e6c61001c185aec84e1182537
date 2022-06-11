@@ -1,0 +1,41 @@
+package ch04;
+
+public class MyBinaryTree implements IBinaryTree{
+
+	@Override
+	public void addElement(Student student) {
+		MyTreeNode newNode = new MyTreeNode(student);
+	}
+
+	@Override
+	public void removeElement(int number) {
+		
+	}
+
+	@Override
+	public void selectElement(int number) {
+		
+	}
+
+	@Override
+	public MyTreeNode getRoot() {
+		
+		return null;
+	}
+
+	@Override
+	public void preorder(MyTreeNode node) {
+		
+	}
+
+	@Override
+	public void inorder(MyTreeNode node) {
+		
+	}
+
+	@Override
+	public void postorder(MyTreeNode node) {
+		
+	}
+	
+}

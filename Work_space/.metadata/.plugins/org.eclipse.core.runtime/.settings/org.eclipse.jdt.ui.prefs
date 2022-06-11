@@ -1,0 +1,9 @@
+content_assist_lru_history=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><history maxLHS\="100" maxRHS\="10"><lhs name\="ch07.subject"><rhs name\="ch07.subject"/></lhs><lhs name\="ch10.GasStation"><rhs name\="ch10.GasStation"/></lhs><lhs name\="ch06.Calc"><rhs name\="ch06.CompleteCalc"/></lhs><lhs name\="ch07.Scheduler"><rhs name\="ch07.RoundRobin"/><rhs name\="ch07.ShortestJob"/><rhs name\="ch07.PriorityAll"/></lhs><lhs name\="ch01.MyListNode"><rhs name\="ch01.MyListNode"/></lhs><lhs name\="ch01.MyLinkedList"><rhs name\="ch01.MyLinkedList"/><rhs name\="ch02.MyListQueue"/><rhs name\="ch03.MyListStack"/></lhs><lhs name\="ch02.IQueue"><rhs name\="ch02.MyListQueue"/></lhs><lhs name\="ch02.MyListQueue"><rhs name\="ch02.MyListQueue"/></lhs><lhs name\="ch03.IStack"><rhs name\="ch03.MyListStack"/></lhs><lhs name\="ch03.MyListStack"><rhs name\="ch03.MyListStack"/></lhs><lhs name\="ch04.IBinaryTree"><rhs name\="ch04.MyBinaryTree"/></lhs><lhs name\="ch04.MyBinaryTree"><rhs name\="ch04.MyBinaryTree"/></lhs></history>
+content_assist_number_of_computers=12
+eclipse.preferences.version=1
+org.eclipse.jdt.internal.ui.navigator.layout=2
+org.eclipse.jdt.internal.ui.navigator.librariesnode=true
+org.eclipse.jdt.ui.formatterprofiles.version=20
+spelling_locale_initialized=true
+useAnnotationsPrefPage=true
+useQuickDiffPrefPage=true

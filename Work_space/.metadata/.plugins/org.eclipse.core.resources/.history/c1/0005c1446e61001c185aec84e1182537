@@ -1,0 +1,11 @@
+package ch04;
+
+public class MyBinaryTreeTest {
+
+	public static void main(String[] args) {
+		MyBinaryTree bTree = new MyBinaryTree();
+		
+		bTree.addElement(new Student(10, '√·«‚¿Ã'));
+	}
+
+}

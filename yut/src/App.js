@@ -85,19 +85,34 @@ function App() {
   }
   function move(place){
     let move;
+    pan[player.placeH][player.placeW] = 1;
     if(player.placeH === 0 || player.placeW === 0) {
       shortcut = true;
     }
     if(shortcut === true) {
-      top = false;
-      under = false;
-      left = false;
-      right = false;
       if(place === 3) {
         shortcut2 = true;
       }
-      player.placeW = place-1;
-      player.placeH = place-1;
+      if(shortcut2 === true) {
+        if(player.placeH === 5 && player.placeW === 5) {
+          shortcut2 = false;
+          top = true;
+        }
+        player.placeH += place-1;
+        player.placeW += place-1;
+      }
+      if(top === true) {
+        player.placeH -= place-1;
+        player.placeW -= place-1;
+      }
+      if(left === true) {
+        player.placeH += place-1;
+        player.placeW += place-1;
+      }
+      if(player.placeH === 5) {
+        shortcut = false;
+        top = true;
+      }
     }
     else if(top === true){
       move = player.placeH - place;

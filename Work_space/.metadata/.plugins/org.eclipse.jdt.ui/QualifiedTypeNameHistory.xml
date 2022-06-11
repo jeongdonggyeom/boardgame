@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="com.sun.java_cup.internal.runtime.Scanner"/>
+    <fullyQualifiedTypeName name="java.util.Scanner"/>
+    <fullyQualifiedTypeName name="ch07.subject"/>
+    <fullyQualifiedTypeName name="ch10.Subway"/>
+    <fullyQualifiedTypeName name="com.sun.java.swing.plaf.motif.resources.motif"/>
+    <fullyQualifiedTypeName name="ch10.GasStation"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="ch06.CalcTest"/>
+    <fullyQualifiedTypeName name="ch06.CompleteCalc"/>
+    <fullyQualifiedTypeName name="ch07.Scheduler"/>
+    <fullyQualifiedTypeName name="java.lang.System"/>
+    <fullyQualifiedTypeName name="ch07.RoundRobin"/>
+    <fullyQualifiedTypeName name="ch07.ShortestJob"/>
+    <fullyQualifiedTypeName name="ch07.PriorityAll"/>
+    <fullyQualifiedTypeName name="ch01.MyLinkedList"/>
+    <fullyQualifiedTypeName name="ch02.MyListQueue"/>
+    <fullyQualifiedTypeName name="ch01.MyListNode"/>
+    <fullyQualifiedTypeName name="ch03.MyListStack"/>
+    <fullyQualifiedTypeName name="ch04.MyBinaryTree"/>
+</qualifiedTypeNameHistroy>

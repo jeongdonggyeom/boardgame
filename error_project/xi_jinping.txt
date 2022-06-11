@@ -1,0 +1,40 @@
+mysql -uroot -p 
+jungdonggyem
+select * from 테이블 이름
+use xi_jinping
+show tables;
+
+CREATE DATABASE BSSM_project CHARACTER SET utf8 COLLATE utf8_general_ci;
+create table `members`(
+  `member_code` int unsigned NOT NULL AUTO_INCREMENT,
+  `member_level` int unsigned NOT NULL,
+  `member_id` varchar(20) NOT NULL,
+  `member_pw` varchar(20) NOT NULL,
+  `member_nickname` varchar(40) NOT NULL,
+  `member_created` datetime NOT NULL,
+  PRIMARY KEY(member_code)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `users` values (0, 0, 'id', 'pw', 'nickname', now());
+
+create table `error_code`(
+ `error_index` int unsigned NOT NULL AUTO_INCREMENT,
+ `error_code` text(1024) NOT NULL,
+ `error_cause` text(1024) NOT NULL,
+ `error_resolution` text(65535) NOT NULL,
+  PRIMARY KEY(c_error_index)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table `board`(
+ `board_number` int unsigned NOT NULL AUTO_INCREMENT,
+ `title` text(1024) NOT NULL,
+ `contents` text(65535) NOT NULL,
+ `comment` text(65535) NOT NULL,
+  PRIMARY KEY(board_number)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create table `test`(
+ `test_number` int unsigned NOT NULL AUTO_INCREMENT,
+ `test1` varchar(20) NOT NULL,
+ `test2` varchar(20) NOT NULL,
+  PRIMARY KEY(test_number)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
