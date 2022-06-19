@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="3cba1162-3c09-4f37-9a5e-effe48800ab5" name="변경" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/foker.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Alrorithm" beforeDir="false" afterPath="$PROJECT_DIR$/../Alrorithm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../gangseogoo" beforeDir="false" afterPath="$PROJECT_DIR$/../gangseogoo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../html/Html" beforeDir="false" afterPath="$PROJECT_DIR$/../html/Html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../opggclone/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/../opggclone/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../opggclone/src/logo.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../opggclone/src/styleComponent/nav.css" beforeDir="false" afterPath="$PROJECT_DIR$/../opggclone/src/styleComponent/nav.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../python" beforeDir="false" afterPath="$PROJECT_DIR$/../python" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/.idea/opggclone.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/public/images/yut1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/public/images/yut2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/public/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/public/manifest.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/public/robots.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/src/App.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/src/App.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/src/App.test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/src/index.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/src/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/src/logo.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/src/reportWebVitals.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../yut/src/setupTests.js" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2AYooLQ9nGf8VmVh16tYJ8B65mj" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "javascript.nodejs.core.library.configured.version": "16.14.2",
+    "javascript.nodejs.core.library.typings.version": "16.11.39",
+    "nodejs_interpreter_path": "node",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="start" type="js.build_tools.npm" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="3cba1162-3c09-4f37-9a5e-effe48800ab5" name="변경" comment="" />
+      <created>1655196057771</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1655196057771</updated>
+      <workItem from="1655196059358" duration="8189000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
