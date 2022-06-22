@@ -7,33 +7,42 @@ const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server,{
     cors: {
-        origin: "http://localhost:3001",
+        origin: "http://localhost:3000",
         credentials: true
     }
 });
 const room = ['room1', 'room2', 'room3'];
-let a = 0;
+let count = 0;
+
 io.sockets.on('connection', (socket)=>{
     console.log('connected');   
 
+    if(count===2){
+        socket.emit('start');
+    }
+
     socket.on('disconnect', ()=>{
         console.log('disconnect');
+        count-=1;
     })
 
-    socket.on("join", ({num, name}) => {
+    socket.on('join', (num, name) => {
         socket.join(room[num], ()=>{
             console.log(`${name} join a ${room[num]}`);
         });
-        io.to(room[num]).emit("onConnect", `${name} 님이 입장했습니다.`);
+        count+=1;
+        console.log(count)
+        io.to(room[num]).emit('onConnect', `${name} 님이 입장했습니다.`, count);
     });
 
-    socket.on("leave", (num ,name) => {
+    socket.on('leave', (num ,name) => {
         socket.leave(room[num]);
         console.log(`${name} leave ${room[num]}`);
-        io.to(room[num]).emit("onLeave", `${name} 님이 방에서 나가셨습니다.`);
+        count-=1;
+        io.to(room[num]).emit('onLeave', `${name} 님이 방에서 나가셨습니다.`, count);
     });
 
-    socket.on('sendMSg', (num, name, msg)=>{
+    socket.on('sendMsg', (num, name, msg)=>{
         a = num;    
         console.log(`${name} sended ${msg}`)
         io.to(room[a]).emit('send', name, msg);
