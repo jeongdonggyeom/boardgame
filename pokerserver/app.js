@@ -12,34 +12,40 @@ const io = require('socket.io')(server,{
     }
 });
 const room = ['room1', 'room2', 'room3'];
-let count = 0;
+let count = [0, 0, 0];
+let people = [];
+
+for(let i=0;i<3;i++){
+    let user = []
+    people[i] = user;
+}
 
 io.sockets.on('connection', (socket)=>{
     console.log('connected');   
 
-    if(count===2){
-        socket.emit('start');
-    }
-
     socket.on('disconnect', ()=>{
         console.log('disconnect');
-        count-=1;
     })
 
     socket.on('join', (num, name) => {
-        socket.join(room[num], ()=>{
-            console.log(`${name} join a ${room[num]}`);
-        });
-        count+=1;
-        console.log(count)
-        io.to(room[num]).emit('onConnect', `${name} 님이 입장했습니다.`, count);
+        if(count[num]<2){
+            socket.join(room[num], ()=>{
+                console.log(`${name} join a ${room[num]}`);
+            });
+            count[num] += 1;
+            console.log(count[num])
+            io.to(room[num]).emit('onConnect', `${name} 님이 입장했습니다.`, count[num]);
+        }
+        else{
+            socket.emit('onConnect', '실패', count[num]);
+        }
     });
 
     socket.on('leave', (num ,name) => {
         socket.leave(room[num]);
         console.log(`${name} leave ${room[num]}`);
-        count-=1;
-        io.to(room[num]).emit('onLeave', `${name} 님이 방에서 나가셨습니다.`, count);
+        if(count[num]>=0) count[num] -= 1;
+        io.to(room[num]).emit('onLeave', `${name} 님이 방에서 나가셨습니다.`, count[num]);
     });
 
     socket.on('sendMsg', (num, name, msg)=>{
