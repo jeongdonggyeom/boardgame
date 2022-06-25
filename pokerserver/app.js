@@ -49,9 +49,8 @@ io.sockets.on('connection', (socket)=>{
     });
 
     socket.on('sendMsg', (num, name, msg)=>{
-        a = num;    
         console.log(`${name} sended ${msg}`)
-        io.to(room[a]).emit('send', name, msg);
+        io.to(room[num]).emit('send', name, msg);
     })
 });
 

@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import '../styleComponents/game.css'
+import { useNavigate } from 'react-router-dom';
 
 const socket = io.connect('http://localhost:3000');
 function Game(){
     const state = useLocation();
-    console.log(state);
+    const navigate = useNavigate();
+    
     let cards = [];
     let myCards = [];
 
@@ -18,6 +20,14 @@ function Game(){
     const [lea, setLea] = useState("");
     const [name, setName] = useState("");
     const [send, setSend] = useState("");
+
+    setTimeout(()=>{
+        setUser(state.state[0]);
+        setRoom(state.state[1]);
+        setCon(state.state[2]);
+        setCount(state.state[3]);
+        socket.emit('join', room, user);
+    }, 100);
 
     useEffect(()=>{
         document.querySelector('#msg').innerHTML += `<p>${con}</p>`
@@ -46,6 +56,7 @@ function Game(){
             setRoom(null);
             setUser(null);
             document.querySelector('#msg').innerHTML = " ";
+            navigate('/');
         }
     }
     const sendMsg = () => {

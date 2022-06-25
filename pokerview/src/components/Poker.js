@@ -10,8 +10,6 @@ const Poker = () => {
 
     const [user, setUser] = useState(null);
     const [room, setRoom] = useState(null);
-    const [con, setCon] = useState("");
-    const [count, setCount] = useState("");
 
     const stepRoom = () => {
         if(room === null){
@@ -28,28 +26,26 @@ const Poker = () => {
 
     socket.on('onConnect', (data, c)=>{
         console.log(data);
-        setCount(c);
-        setCon(data);  
         for(let i=0;i<4;i++){
             if(i===0) userInfo.push(user);
             if(i===1) userInfo.push(room);
-            if(i===2) userInfo.push(con);
-            if(i===3) userInfo.push(count);
+            if(i===2) userInfo.push(data);
+            if(i===3) userInfo.push(c);
         }
         navigate('/game', { state: userInfo })
     })
 
     return(
         <div className="poker">
-          <h1>poker</h1>
+          <h1 className="poker--h1">POKER</h1>
           <div className="startGame">
             <div>
-                <span>이름: </span><input type={"text"} onChange={(e) => {setUser(e.target.value)}}/>
+                <span>이름:</span><input type={"text"} onChange={(e) => {setUser(e.target.value)}}/>
             </div>
             <div>
-                <span>방 번호: </span><input type="text" onChange={(e)=>{ setRoom(e.target.value) }}/>    
+                <span>방 번호:</span><input type="text" onChange={(e)=>{ setRoom(e.target.value) }}/>    
             </div>
-            <button onClick={stepRoom}>방 입장</button>
+            <button onClick={stepRoom}>방 입장하기</button>
           </div>
       </div>
     )
