@@ -9,25 +9,27 @@ let smallbet = 0;
 let cards = [];
 let otherCards = [];
 let shareCards = [];
+let myDeck = [];
+let otherDeck = [];
+let message="";
+let pandon=0;
 
 const Poker = () => {    
     const loc = useLocation();
     const nav = useNavigate();
 
-    const [player, setPlayer] = useState({
+    const player = {
         role: '',
         money: 0,
         myCards: []
-    });
+    };
     const [sequence, setSequence] = useState(0);
     const [panMoney, setPanMoney] = useState(0);
     const [cardOpen, setCardOpen] = useState(false);
-    const [gs, setGs] = useState(false);
-    const [join, setJoin] = useState(true);
+    const [gs, setGs] = useState(true);
     const [user, setUser] = useState(loc.state[1]);
     const [room, setRoom] = useState(loc.state[0]);
     const [count, setCount] = useState(null);
-    const [msg, setMsg] = useState(null);
     const [con, setCon] = useState(null);
     const [name, setName] = useState(null);
     const [send, setSend] = useState(null);
@@ -74,16 +76,106 @@ const Poker = () => {
             }
         }
         else if(sequence === 3){
-            giveCards('myCards', player.myCards, player.myCards.length);
+            giveCards('myCards', player.myCards, 1, player.myCards.length);
             socket.emit('cards', player.myCards, room);
             setTimeout(()=>{
                 socket.emit('sequence', 4, room);
-            }, 1000);
+            }, 500);
         }
         else if(sequence === 4){
-            socket.emit('shareCards', 3, room);
+            socket.emit('shareCards', 5, room);
+            alert('15초 후 첫 번째 베팅이 시작됩니다.')
+            setTimeout(()=>{
+                for(let i=0;i<7;i++){
+                    if(i<2){
+                        myDeck.push(player.myCards[i+1])
+                    }
+                    else{
+                        myDeck.push(shareCards[i-1]);
+                    }
+                }
+                socket.emit('sequence', 5, room);
+            }, 15000);
+        }
+        else if(sequence === 5){
+            if(player.role === 'bigBlind'){
+                bigBetting();
+            }
+        }
+        else if(sequence === 6){
+            if(player.role === 'smallBlind'){
+                smallBetting();
+            }
+        }
+        else if(sequence === 7){
+            alert('공유 카드 오픈');
+            giveCards('shareCards', shareCards, 1, 3);
+            alert('15초 뒤 두 번째 베팅이 시작됩니다.');
+            setTimeout(()=>{
+                socket.emit('sequence', 8, room);
+            }, 15000)
+        }
+        else if(sequence === 8){
+            if(player.role === 'smallBlind'){
+                smallBetting();
+            }
+        }
+        else if(sequence === 9){
+            if(player.role === 'bigBlind'){
+                bigBetting();
+            }
+        }
+        else if(sequence === 10){
+            alert('턴 카드 오픈');
+            giveCards('shareCards', shareCards, 4, 4);
+            alert('15초 뒤 세 번째 베팅이 시작됩니다.')
+            setTimeout(()=>{
+                socket.emit('sequence', 11, room);
+            }, 15000);
+        }
+        else if(sequence === 11){
+            if(player.role === 'smallBlind'){
+                smallBetting();
+            }
+        }
+        else if(sequence === 12){
+            if(player.role === 'bigBlind'){
+                bigBetting();
+            }
+        }
+        else if(sequence === 13){
+            alert('리버 카드 오픈');
+            giveCards('shareCards', shareCards, 5, 5);
+            alert('15초 뒤 마지막 베팅이 시작됩니다.');
+            setTimeout(()=>{
+                socket.emit('sequence', 14, room);
+            }, 15000);
+        }
+        else if(sequence === 14){
+            if(player.role === 'bigBlind'){
+                bigBetting();
+            }
+        }
+        else if(sequence === 15){
+            if(player.role === 'smallBlind'){
+                smallBetting();
+            }
+        }
+        else if(sequence === 16){
+            alert('Showdown 승패 가리기');
+            socket.emit('showdown', myDeck, room, player.role);
         }
     }, [sequence])
+
+    useEffect(()=>{
+        if(sequence !== 0){
+            document.querySelector('.betting').innerHTML = `<p>베팅 액: ${panMoney}</p>`;
+        }
+    }, [panMoney])
+
+    useEffect(()=>[
+        document.querySelector('.myMoney').innerHTML = `<p>나의 돈: ${player.money}</p>`
+    ], [player]);
 
     const leaveRoom = () =>{
         if(room === null){
@@ -102,11 +194,11 @@ const Poker = () => {
         else if(user === null){
             alert('이름이 없음')
         }
-        else if(msg === null){
+        else if(message === null){
             alert('보낼 메세지가 없음')
         }
         else{
-            socket.emit('sendMsg', room, user, msg)
+            socket.emit('sendMsg', room, user, message)
             console.log('실행')
         }
     }
@@ -115,7 +207,7 @@ const Poker = () => {
         for(let i=1;i<=2;i++) player.myCards[i] = Math.round(Math.random()*52)+1;
         Number(window.localStorage.getItem('sp')) === 0 ? player.money = 0 : player.money = Number(window.localStorage.getItem('sp'));
         console.log(player);
-        socket.emit('setRole');
+        socket.emit('setRole', room);
     }
     const smallBetting = () =>{
         let bet;
@@ -127,34 +219,75 @@ const Poker = () => {
             else{
                 player.money -= bet;
                 window.localStorage.setItem('sp', player.money);
-                setPanMoney(prev => prev += bet);
-                console.log(panMoney);
-                console.log(bet);
-                socket.emit('panMoney', panMoney, room); // 베팅된 금액 업데이트
-                socket.emit('smallbet', bet, room); // 내가 베팅한 금액 보내기
+                pandon += bet;
+                socket.emit('panMoney', pandon, room); // 베팅된 금액 업데이트
+                socket.emit('smallbet', bet, room); // smallBlind가 베팅한 금액 보내기
                 setTimeout(()=>{
                     socket.emit('sequence', 2, room); // 게임 순서 2번으로 변경
-                }, 3000);
+                }, 1000);
                 break;
+            }
+        }
+        while(sequence===6 || sequence === 8 || sequence === 11 || sequence === 15){
+            bet = prompt('베팅 금액을 입력해주세요');
+            if(bet !== 0 && player.money >= bet){
+                player.money -= bet;
+                window.localStorage.setItem('sp', player.money);
+                pandon += bet;
+                socket.emit('panMoney', pandon, room);
+                setTimeout(()=>{
+                    socket.emit('sequence', sequence+1, room);
+                }, 1000);
+                break;
+            }
+            else{
+                if(player.money === 0){
+                    socket.emit('die', room, player.role);
+                }
+                else{
+                    alert('베팅 실패');
+                }
             }
         }
     }
     const bigBetting = () =>{
         let bet;
-        while(sequence===2){
+        while(sequence === 2){
+            console.log(typeof(smallbet), smallbet);
             bet = prompt(`smallBlind의 2배를 베팅 (smallBlind의 베팅: ${smallbet})`);
-            if(bet===(smallbet*2) || bet !== null){
+            if(bet === (smallbet*2)){
                 player.money -= bet;
                 window.localStorage.setItem('sp', player.money);
-                setPanMoney(prev => prev += bet);
-                socket.emit('panMoney', panMoney, room);
+                pandon += bet;
+                socket.emit('panMoney', pandon, room);
                 setTimeout(()=>{
                     socket.emit('sequence', 3, room);
-                }, 3000);
+                }, 1000);
                 break;
             }
             else{
                 alert('다시 베팅해주세요. (2배를 베팅하지 않음)');
+            }
+        }
+        while(sequence === 5 || sequence === 9 || sequence === 12 || sequence === 14){
+            bet = prompt('베팅 금액을 입력해주세요');
+            if(bet !== 0 && player.money >= bet){
+                player.money -= bet;
+                window.localStorage.setItem('sp', player.money);
+                pandon += bet;
+                socket.emit('panMoney', pandon, room);
+                setTimeout(()=>{
+                    socket.emit('sequence', sequence+1, room);
+                }, 1000);
+                break;
+            }
+            else{
+                if(player.money === 0){
+                    socket.emit('die', room, player.role);
+                }
+                else{
+                    alert('베팅 실패');
+                }
             }
         }
     }
@@ -163,10 +296,10 @@ const Poker = () => {
             sendMsg();
         }
     }
-    const giveCards = (tag, cards, size) => {
+    const giveCards = (tag, cards, fsize, lsize) => {
         setTimeout(()=>{
             document.querySelector(`.${tag}`).innerHTML = "";
-            for(let i=1;i<=size;i++){
+            for(let i=fsize;i<=lsize;i++){
                 if(cards[i] >= 1 && cards[i] <= 13) {
                     if(cards[i] === 4){
                         document.querySelector(`.${tag}`).innerHTML += `<img src="images/spade/spade${cards[i]}.svg" alt="icon" className="card" style="width: 100px; height: 150px; margin-left: 5px;" />`
@@ -202,10 +335,10 @@ const Poker = () => {
             }
         }, 500);
     }
-    const giveHiddenCards = (tag, cards, size, repo) =>{
+    const giveHiddenCards = (tag, cards, fsize, lsize, repo) =>{
         setTimeout(()=>{
             document.querySelector(`.${tag}`).innerHTML = "";
-            for(let i=1;i<=size;i++){
+            for(let i=fsize;i<=lsize;i++){
                 repo.push(cards[i]);
                 document.querySelector(`.${tag}`).innerHTML += '<img src="images/cardback.jpg" alt="icon" className="card" style="width: 100px; height: 150px; margin-left: 5px;" />'
             }
@@ -215,8 +348,7 @@ const Poker = () => {
     socket.on('onConnect', (data, c)=>{
         setCon(data);
         setCount(c);
-        setJoin(false);
-        console.log(con, count, join, data);
+        console.log(con, count);
     })
     socket.on('onLeave', (data, c)=>{
         setCount(c);
@@ -233,11 +365,11 @@ const Poker = () => {
     })
     socket.on('otherCards', (mc)=>{
         console.log('실행됨');
-        if(JSON.stringify(player.myCards) !== JSON.stringify(mc)) giveHiddenCards('otherCards', mc, 2, otherCards); 
+        if(JSON.stringify(player.myCards) !== JSON.stringify(mc)) giveHiddenCards('otherCards', mc, 1, 2, otherCards); 
     })
     socket.on('shareCards', (data)=>{
         if(sequence === 4){
-            giveHiddenCards('shareCards', data, 3, shareCards);
+            giveHiddenCards('shareCards', data, 1, 3, shareCards);
         }
     })
     socket.once('role', (data)=>{
@@ -248,16 +380,38 @@ const Poker = () => {
         }, 3000);
     })
     socket.on('panMoney', (data)=>{
-        console.log(data);
-        setPanMoney(data);
+        setPanMoney(Number(data));
     })
     socket.on('smallbet', (data)=>{
         console.log(data);
-        smallbet = data;
+        smallbet = Number(data);
     })
     socket.on('sequence', (data)=>{
         setSequence(data);
     })
+    socket.on('die', (data)=>{
+        if(data === 'smallBlind'){
+            socket.emit('win', room, 'bigBlind');
+        }
+        else{
+            socket.emit('win', room, 'smallBlind');
+        }
+    })
+    socket.on('win', (data)=>{
+        if(player.role === data){
+            let info = [];
+            info.push('win');
+            info.push(name);
+            info.push(myDeck);
+            nav('/winorlose', { state: info });
+        }
+        else{
+            nav('/winorlose');
+        }
+    })
+    // socket.on('showdown', (data)=>{
+        
+    // })
 
     return(
         <div>
@@ -267,14 +421,14 @@ const Poker = () => {
                     <div className="startGame--msg" id="remsg"></div>
                     <input 
                         type="text" 
-                        onChange={(e)=>{ setMsg(e.target.value) }} 
+                        onChange={(e)=>{ message = e.target.value }} 
                         onKeyDown={onKeyDown} 
                         placeholder="보낼 메세지를 입력해주세요."
                         className="gameinput"
                     />
                 </div>
-                <p className="betting">베팅 액: {panMoney}</p>
-                <p className="myMoney">나의 돈: {player.money}</p>
+                <div className="betting"></div>
+                <p className="myMoney"></p>
                 <div className="cardsDiv">
                     <span className="cardsDiv--span2">상대 카드</span>
                     <div className="otherCards"></div>
@@ -292,7 +446,7 @@ const Poker = () => {
                 <div className="game--msg">
                     <div className="remsg" id="remsg"></div>
                         <input type="text" 
-                            onChange={(e)=>{ setMsg(e.target.value) }} 
+                            onChange={(e)=>{ message = e.target.value }} 
                             onKeyDown={onKeyDown} 
                             placeholder="보낼 메세지를 입력해주세요."
                         />

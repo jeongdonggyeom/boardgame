@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = require('socket.io')(server,{
     cors: {
-        origin: "http://localhost:3000",
+        origin: "https://holdem.bssm.kro.kr",
         credentials: true
     }
 });
@@ -16,13 +16,20 @@ let count = [0, 0, 0];
 let cards = [];
 let shareCards = [];
 let currentUser = [];
-const role = ['smallBlind', 'bigBlind'];
+let smallDeck = [];
+let bigDeck = [];
+let role = [];
 for(let i=1;i<=52;i++){
     cards[i] = i;
 }
 for(let i=0;i<3;i++){
     let arr = [];
+    let role = ['smallBlind', 'bigBlind'];
     currentUser[i] = arr;
+    shareCards[i] = arr;
+    smallDeck[i] = arr;
+    bigDeck[i] = arr;
+    role[i] = role;
 }
 io.sockets.on('connection', (socket)=>{
     console.log('connected');   
@@ -63,16 +70,16 @@ io.sockets.on('connection', (socket)=>{
         io.to(room[num]).emit('onLeave', `${name} 님이 방에서 나가셨습니다.`, count[num]);
     });
 
-    socket.on('setRole', ()=>{
+    socket.on('setRole', (room)=>{
         let num = Math.round(Math.random());
-        if(role[num] !== 0){
-            socket.emit('role', role[num]);
+        if(role[room][num] !== 0){
+            socket.emit('role', role[room][num]);
         }
         else{
-            if(num === 1) socket.emit('role', role[num-1]);
-            else socket.emit('role', role[num+1]);
+            if(num === 1) socket.emit('role', role[room][num-1]);
+            else socket.emit('role', role[room][num+1]);
         }
-        role[num] = 0;
+        role[room][num] = 0;
     })
 
     socket.on('sendMsg', (num, name, msg)=>{
@@ -87,9 +94,10 @@ io.sockets.on('connection', (socket)=>{
 
     socket.on('shareCards', (num, roomNum)=>{
         for(let i=1;i<=num;i++){
-            shareCards[i] = Math.round(Math.random()*52)+1;
+            shareCards[num][i] = Math.round(Math.random()*52)+1;
         }
-        io.to(room[roomNum]).emit('shareCards', shareCards);
+        console.log(shareCards[num]);
+        io.to(room[roomNum]).emit('shareCards', shareCards[num]);
     })
 
     socket.on('panMoney', (data, num)=>{
@@ -102,6 +110,30 @@ io.sockets.on('connection', (socket)=>{
 
     socket.on('sequence', (data, num)=>{
         io.to(room[num]).emit('sequence', data);
+    })
+
+    socket.on('die', (num, role)=>{
+        io.to(room[num]).emit('die', role);
+    })
+
+    socket.on('win', (num, role)=>{
+        io.to(room[num]).emit('win', role);
+    })
+
+    socket.on('showdown', (cards, num, role)=>{
+        let jokbo;
+        console.log(cards);
+        if(role === 'smallBlind'){
+            for(let i=0;i<7;i++){
+                smallDeck[num][i] = cards[i];
+            }
+        }
+        else{
+            for(let i=0;i<7;i++){
+                bigDeck[num][i] = cards[i];
+            }
+        }
+        role === 'smallBlind' ? socket.emit('showdown', bigDeck[num]) : socket.emit('showdown', smallDeck[num]);
     })
 });
 
