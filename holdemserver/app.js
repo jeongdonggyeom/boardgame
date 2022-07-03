@@ -31,6 +31,86 @@ for(let i=0;i<3;i++){
     bigDeck[i] = arr;
     role[i] = role;
 }
+function royal(deck)
+{
+    let royalStraightFlush = 0;
+    for(let i=0;i<7;i++){
+        if(deck[i].pae === deck[i+1].pae){
+            if(deck[i].num+1 === deck[i+1].num){
+                if(deck[i].num === 10 || deck[i].num === 11 || deck[i].num === 12 || deck[i].num === 13) royalStraightFlush++;
+            }
+            if(deck[0].num === 1) royalStraightFlush++;
+        }
+    }
+    return royalStraightFlush >= 5 ? true : false;
+}
+function sf(deck)
+{
+    let straightFlush = 0;
+    for(let i=0;i<7;i++){
+        if(deck[i].pae === deck[i+1].pae){
+            if(deck[i].num+1 === deck[i+1].num) straightFlush++;
+        }
+    }
+    return straightFlush >= 5 ? true : false;
+}
+function flush(deck)
+{
+    let flush = 0;
+    for(let i=0;i<7;i++){
+        if(deck[i].pae === deck[i+1].pae) flush++;
+    }
+    return flush >= 5 ? true : false;
+}
+function straight(deck)
+{
+    let straight = 0;
+    for(let i=0;i<7;i++){
+        if(deck[i].num+1 === deck[i+1].num) straight++;
+    }
+    return straight >= 5 ? true : false;
+}
+function TaF(deck)
+{
+    let count;
+    for(let i=0;i<7;i++){
+        if(deck[i].num === deck[i+1].num){
+            count++;
+        }
+    }
+    return count >= 4 ? 1 : 2
+}
+function fair(deck)
+{
+    let fair = 0;
+    for(let i=0;i<7;i++){
+        if(deck[i].num === deck[i].num){
+            fair++;
+            i+=2;
+        }
+    }
+    if(fair===1) return 1;
+    else if(fair===2) return 2;
+}
+function checkJokbo(deck)
+{
+    const r = royal(deck);
+    const ssf = sf(deck);
+    const ff = flush(deck);
+    const st = straight(deck);
+    const taf = TaF(deck);
+    const fff = fair(deck);
+
+    if(r) return 'royal';
+    else if(ssf) return 'sf';
+    else if(ff) return 'flush';
+    else if(st) return 'st';
+    else if(taf === 1) return 'fc';
+    else if(taf === 2) return 'toak';
+    else if(fff === 1) return 'of';
+    else if(fff === 2) return 'tf';
+}
+
 io.sockets.on('connection', (socket)=>{
     console.log('connected');   
 
@@ -46,6 +126,9 @@ io.sockets.on('connection', (socket)=>{
     })
 
     socket.on('join', (num, name) => {
+        for(let i=0;i<2;i++){
+            i === 0 ? role[num][i] = 'smallBlind' : role[num][i] = 'bigBlind';
+        }    
         if(count[num]<2){
             socket.join(room[num], ()=>{
                 console.log(`${name} join a ${room[num]}`);
@@ -121,19 +204,26 @@ io.sockets.on('connection', (socket)=>{
     })
 
     socket.on('showdown', (cards, num, role)=>{
-        let jokbo;
+        let deck;
         console.log(cards);
         if(role === 'smallBlind'){
             for(let i=0;i<7;i++){
                 smallDeck[num][i] = cards[i];
             }
+            deck = smallDeck;
         }
         else{
             for(let i=0;i<7;i++){
                 bigDeck[num][i] = cards[i];
             }
-        }
-        role === 'smallBlind' ? socket.emit('showdown', bigDeck[num]) : socket.emit('showdown', smallDeck[num]);
+            deck = bigDeck;
+        }   
+        const jokbo = checkJokbo(deck);
+        role === 'smallBlind' ? socket.emit('showdown', 'smallBlind', jokbo) : socket.emit('showdown', 'bigBlind', jokbo);
+    })
+
+    socket.on('otherDeck', (num, data)=>{
+        data === 'smallBlind' ? socket.emit('otherDeck', bigDeck[num]) : socket.emit('otherDeck', smallDeck[num]);
     })
 });
 

@@ -10,8 +10,8 @@ function Winorlose()
 
     const [name, setName] = useState(null);
     const [send, setSend] = useState(null);
-    const [user, setUser] = useState('user');
-    const [room, setRoom] = useState(0);
+    const [user, setUser] = useState(loc.state[0]);
+    const [room, setRoom] = useState(loc.state[1]);
 
     // useEffect(()=>{
     //     socket.emit('join', room, user);

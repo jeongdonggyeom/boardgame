@@ -10,9 +10,11 @@ let cards = [];
 let otherCards = [];
 let shareCards = [];
 let myDeck = [];
-let otherDeck = [];
+let otherDeck;
 let message="";
 let pandon=0;
+let myJokbo;
+let otherJokbo;
 
 const Poker = () => {    
     const loc = useLocation();
@@ -25,7 +27,6 @@ const Poker = () => {
     };
     const [sequence, setSequence] = useState(0);
     const [panMoney, setPanMoney] = useState(0);
-    const [cardOpen, setCardOpen] = useState(false);
     const [gs, setGs] = useState(true);
     const [user, setUser] = useState(loc.state[1]);
     const [room, setRoom] = useState(loc.state[0]);
@@ -56,7 +57,6 @@ const Poker = () => {
             if(count===2){
                 alert('10초 뒤 게임 시작');
                 setTimeout(()=>{
-                    console.log("game start");
                     setGs(true);
                     gameStart();
                 }, 10000)
@@ -88,10 +88,40 @@ const Poker = () => {
             setTimeout(()=>{
                 for(let i=0;i<7;i++){
                     if(i<2){
-                        myDeck.push(player.myCards[i+1])
+                        if(player.myCards[i] <= 13) myDeck.push({
+                            pae: 'spade',
+                            num: i
+                        });
+                        else if(player.myCards[i] <= 26) myDeck.push({
+                            pae: 'diamond',
+                            num: i
+                        });
+                        else if(player.myCards[i] <= 39) myDeck.push({
+                            pae: 'heart',
+                            num: i
+                        });
+                        else if(player.myCards[i] <= 52) myDeck.push({
+                            pae: 'club',
+                            num: i
+                        });
                     }
                     else{
-                        myDeck.push(shareCards[i-1]);
+                        if(player.myCards[i] <= 13) myDeck.push({
+                            pae: 'spade',
+                            num: i
+                        });
+                        else if(player.myCards[i] <= 26) myDeck.push({
+                            pae: 'diamond',
+                            num: i
+                        });
+                        else if(player.myCards[i] <= 39) myDeck.push({
+                            pae: 'heart',
+                            num: i
+                        });
+                        else if(player.myCards[i] <= 52) myDeck.push({
+                            pae: 'club',
+                            num: i
+                        });
                     }
                 }
                 socket.emit('sequence', 5, room);
@@ -163,7 +193,12 @@ const Poker = () => {
         }
         else if(sequence === 16){
             alert('Showdown 승패 가리기');
-            socket.emit('showdown', myDeck, room, player.role);
+            const sortDeck = myDeck.sort((a, b)=>{ a.num - b.num });
+            console.log(sortDeck);
+            socket.emit('showdown', sortDeck, room, player.role);
+            setTimeout(()=>{
+                socket.emit('ohterDeck', room, player.role);
+            }, 1000);
         }
     }, [sequence])
 
@@ -199,14 +234,20 @@ const Poker = () => {
         }
         else{
             socket.emit('sendMsg', room, user, message)
-            console.log('실행')
         }
     }
     const gameStart = () => {
+        pandon = 0;
+        smallbet = 0;
+        cards = [];
+        otherCards = [];
+        shareCards = [];
+        myDeck = [];
+        myJokbo="";
+        otherJokbo="";
         for(let i=1;i<=52;i++) cards[i] = i;
         for(let i=1;i<=2;i++) player.myCards[i] = Math.round(Math.random()*52)+1;
         Number(window.localStorage.getItem('sp')) === 0 ? player.money = 0 : player.money = Number(window.localStorage.getItem('sp'));
-        console.log(player);
         socket.emit('setRole', room);
     }
     const smallBetting = () =>{
@@ -252,8 +293,7 @@ const Poker = () => {
     }
     const bigBetting = () =>{
         let bet;
-        while(sequence === 2){
-            console.log(typeof(smallbet), smallbet);
+        while(sequence === 2){s
             bet = prompt(`smallBlind의 2배를 베팅 (smallBlind의 베팅: ${smallbet})`);
             if(bet === (smallbet*2)){
                 player.money -= bet;
@@ -348,23 +388,19 @@ const Poker = () => {
     socket.on('onConnect', (data, c)=>{
         setCon(data);
         setCount(c);
-        console.log(con, count);
     })
     socket.on('onLeave', (data, c)=>{
         setCount(c);
         setCon(data);
-        console.log(con, count);
     })
     socket.on('getout', ()=>{
         nav('/');
     })
     socket.on('send', (name, msg)=>{
-        console.log(`${name} : ${msg}`)
         setSend(msg);
         setName(name);
     })
     socket.on('otherCards', (mc)=>{
-        console.log('실행됨');
         if(JSON.stringify(player.myCards) !== JSON.stringify(mc)) giveHiddenCards('otherCards', mc, 1, 2, otherCards); 
     })
     socket.on('shareCards', (data)=>{
@@ -374,7 +410,6 @@ const Poker = () => {
     })
     socket.once('role', (data)=>{
         player.role = data;
-        console.log(player);
         setTimeout(()=>{
             socket.emit('sequence', 1, room);
         }, 3000);
@@ -383,35 +418,31 @@ const Poker = () => {
         setPanMoney(Number(data));
     })
     socket.on('smallbet', (data)=>{
-        console.log(data);
         smallbet = Number(data);
     })
     socket.on('sequence', (data)=>{
         setSequence(data);
     })
     socket.on('die', (data)=>{
-        if(data === 'smallBlind'){
-            socket.emit('win', room, 'bigBlind');
-        }
-        else{
-            socket.emit('win', room, 'smallBlind');
-        }
+        data === 'smallBlind' ? socket.emit('win', room, 'bigBlind') : socket.emit('win', room, 'smallBlind');
     })
     socket.on('win', (data)=>{
+        let info = [];
+        info.push(room);
+        info.push(user);
         if(player.role === data){
-            let info = [];
             info.push('win');
             info.push(name);
             info.push(myDeck);
-            nav('/winorlose', { state: info });
         }
-        else{
-            nav('/winorlose');
-        }
+        nav('/winorlose', { state: info });
     })
-    // socket.on('showdown', (data)=>{
-        
-    // })
+    socket.on('showdown', (data, jokbo)=>{
+        data === player.role ? myJokbo = jokbo : otherJokbo = jokbo;
+    })
+    socket.on('otherDeck', (data)=>{
+        otherDeck = data;
+    })
 
     return(
         <div>
