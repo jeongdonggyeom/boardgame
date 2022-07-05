@@ -12,6 +12,7 @@ const io = require('socket.io')(server,{
     }
 });
 const room = ['room1', 'room2', 'room3'];
+const sb = ['smallBlind', 'bigBlind'];
 let count = [0, 0, 0];
 let cards = [];
 let shareCards = [];
@@ -24,12 +25,11 @@ for(let i=1;i<=52;i++){
 }
 for(let i=0;i<3;i++){
     let arr = [];
-    let role = ['smallBlind', 'bigBlind'];
     currentUser[i] = arr;
     shareCards[i] = arr;
     smallDeck[i] = arr;
     bigDeck[i] = arr;
-    role[i] = role;
+    role[i] = sb;
 }
 function royal(deck)
 {
@@ -78,7 +78,8 @@ function TaF(deck)
             count++;
         }
     }
-    return count >= 4 ? 1 : 2
+    if(count >= 4) return 'four';
+    else if(count>=3) return 'three';
 }
 function fair(deck)
 {
@@ -89,11 +90,13 @@ function fair(deck)
             i+=2;
         }
     }
-    if(fair===1) return 1;
-    else if(fair===2) return 2;
+    if(fair===1) return 'onefair';
+    else if(fair===2) return 'twofair';
 }
 function checkJokbo(deck)
 {
+    let three;
+    let two;
     const r = royal(deck);
     const ssf = sf(deck);
     const ff = flush(deck);
@@ -103,12 +106,19 @@ function checkJokbo(deck)
 
     if(r) return 'royal';
     else if(ssf) return 'sf';
+    else if(taf === 'four') return 'four';
     else if(ff) return 'flush';
     else if(st) return 'st';
-    else if(taf === 1) return 'fc';
-    else if(taf === 2) return 'toak';
-    else if(fff === 1) return 'of';
-    else if(fff === 2) return 'tf';
+    else if(taf === 'three') three = true;
+    else if(fff === 'twofair') two = true;
+    else if(fff === 'onefair') return 'onefair';
+
+    if(three && two) return 'full';
+    else if(three) return 'three';
+    else if(two) return 'two';
+
+    if(r === false && ssf === false && taf !== 'four' && taf !== 'three' && ff === false && st === false && fff !== 'twofair' && fff != 'onefair')
+        return 'high';
 }
 
 io.sockets.on('connection', (socket)=>{
@@ -120,22 +130,18 @@ io.sockets.on('connection', (socket)=>{
             for(let j=0;j<2;j++){
                 if(currentUser[i][j] === socket){
                     count[i] -= 1;
+                    currentUser[i][j] === null;
                 }
             }
         }
-    })
+    });
 
-    socket.on('join', (num, name) => {
-        for(let i=0;i<2;i++){
-            i === 0 ? role[num][i] = 'smallBlind' : role[num][i] = 'bigBlind';
-        }    
+    socket.on('join', (num, name) => { 
         if(count[num]<2){
             socket.join(room[num], ()=>{
                 console.log(`${name} join a ${room[num]}`);
             });
-            for(let i=0;i<2;i++){
-                if(currentUser[num][i] !== null) currentUser[num][i] = socket;
-            }
+            currentUser[num][count[num]] = socket;
             count[num] += 1;
             console.log(count[num])
             io.to(room[num]).emit('onConnect', `${name} 님이 입장했습니다.`, count[num]);
@@ -145,25 +151,34 @@ io.sockets.on('connection', (socket)=>{
         }
     });
 
-    socket.on('leave', (num ,name) => {
+    socket.on('leave', (num, name, socket) => {
         socket.leave(room[num]);
         console.log(`${name} leave ${room[num]}`);
-        if(count[num]>=0) count[num] -= 1;
-        socket.emit('getout');
+        if(count[num]>0) count[num] -= 1;
+        role[num] = sb;
+        for(let i=0;i<2;i++){
+            if(currentUser[num][i] === socket){
+                io.sockets.socket(socket).emit('getout');
+            }
+        }
         io.to(room[num]).emit('onLeave', `${name} 님이 방에서 나가셨습니다.`, count[num]);
     });
 
     socket.on('setRole', (room)=>{
         let num = Math.round(Math.random());
         if(role[room][num] !== 0){
-            socket.emit('role', role[room][num]);
+            socket.emit('role', role[room][num])
         }
         else{
-            if(num === 1) socket.emit('role', role[room][num-1]);
-            else socket.emit('role', role[room][num+1]);
+            if(num === 1) {
+                socket.emit('role', role[room][num-1])
+            } 
+            else {
+                socket.emit('role', role[room][num+1])
+            }
         }
         role[room][num] = 0;
-    })
+    });
 
     socket.on('sendMsg', (num, name, msg)=>{
         console.log(`${name} sended ${msg}`)
@@ -177,10 +192,12 @@ io.sockets.on('connection', (socket)=>{
 
     socket.on('shareCards', (num, roomNum)=>{
         for(let i=1;i<=num;i++){
-            shareCards[num][i] = Math.round(Math.random()*52)+1;
+            let n = Math.round(Math.random()*52)+1;
+            shareCards[roomNum][i] = n;
         }
-        console.log(shareCards[num]);
-        io.to(room[roomNum]).emit('shareCards', shareCards[num]);
+        shareCards[roomNum][0] = null;
+        console.log(shareCards[roomNum]);
+        io.to(room[roomNum]).emit('shareCards', shareCards[roomNum]);
     })
 
     socket.on('panMoney', (data, num)=>{
@@ -197,6 +214,8 @@ io.sockets.on('connection', (socket)=>{
 
     socket.on('die', (num, role)=>{
         io.to(room[num]).emit('die', role);
+        if(role === 'smaillBlind') io.to(room[num]).emit('win', 'bigBlind');
+        else io.to(room[num]).emit('win', 'smallBlind');
     })
 
     socket.on('win', (num, role)=>{
@@ -219,7 +238,19 @@ io.sockets.on('connection', (socket)=>{
             deck = bigDeck;
         }   
         const jokbo = checkJokbo(deck);
-        role === 'smallBlind' ? socket.emit('showdown', 'smallBlind', jokbo) : socket.emit('showdown', 'bigBlind', jokbo);
+        let weight;
+        if(jokbo === 'royal') weight = 1;
+        else if(jokbo === 'sf') weight = 2;
+        else if(jokbo === 'four') weight = 3;
+        else if(jokbo === 'full') weight = 4;
+        else if(jokbo === 'flush') weight = 5;
+        else if(jokbo === 'st') weight = 6;
+        else if(jokbo === 'three') weight = 7;
+        else if(jokbo === 'two') weight = 8;
+        else if(jokbo === 'one') weight = 9;
+        else if(jokbo === 'hight') weight = 10;
+        
+        role === 'smallBlind' ? socket.emit('showdown', 'smallBlind', jokbo, weight) : socket.emit('showdown', 'bigBlind', jokbo, weight);
     })
 
     socket.on('otherDeck', (num, data)=>{

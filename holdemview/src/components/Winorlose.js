@@ -2,26 +2,33 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import io from 'socket.io-client'
 
-const socket = io.connect('https://holdem.bssm.kro.kr');
+const socket = io.connect('http://localhost:3000');    // 소켓 정의
 function Winorlose()
 {
-    const nav = useNavigate();
-    const loc = useLocation();
+    const nav = useNavigate();  
+    const loc = useLocation();  
 
     const [name, setName] = useState(null);
     const [send, setSend] = useState(null);
-    const [user, setUser] = useState(loc.state[0]);
-    const [room, setRoom] = useState(loc.state[1]);
+    const room = loc.state.room;
+    const user = loc.state.user;
 
-    // useEffect(()=>{
-    //     socket.emit('join', room, user);
-    // }, []);
+    useEffect(()=>{
+        socket.emit('join', room, user);    // 방에 접속
+    }, []);
 
     useEffect(()=>{
         if(name !== null){
             document.querySelector('#remsg').innerHTML += `<p>${name} : ${send}</p>`
         }
     }, [send]);
+
+    useEffect(()=>{
+        document.querySelector('cards').innerHTML = "";
+        for(let i=0;i<loc.state.myDeck.length;i++){
+            document.querySelector('cards').innerHTML += loc.state.myDeck[i]
+        }
+    }, []);
 
     let message;
 
@@ -54,7 +61,7 @@ function Winorlose()
     })
     return(
         <div className='winrootdiv'>
-            <p className="winName">user1의 승리</p>
+            <p className="winName">{loc.state.user}</p>
             <div className='win'>
                 <div className="win--div">
                     <div className="win--divMsg" id="remsg"></div>
@@ -67,14 +74,8 @@ function Winorlose()
                     />
                 </div>
                 <div className='winDiv'>
-                    <span className='jokbo'>user1의 패: 풀하우스</span>
-                    <div className='cards'>
-                        <img src="images/spade/spade2.png" className='card' alt='icon' />
-                        <img src="images/spade/spade2.png" className='card' alt='icon' />
-                        <img src="images/spade/spade2.png" className='card' alt='icon' />
-                        <img src="images/spade/spade1.png" className='card' alt='icon' />
-                        <img src="images/spade/spade1.png" className='card' alt='icon' />
-                    </div>
+                    <span className='jokbo'>{`${loc.state.user}의 패: ${loc.state.jokbo}`}</span>
+                    <div className='cards'></div>
                 </div>
             </div>
             <button onClick={nav('/')} className="winbutton">메인화면으로 가기</button>

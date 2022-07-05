@@ -6,7 +6,7 @@ function Main()
     const nav = useNavigate();
     const [user, setUser] = useState();
     const [room, setRoom] = useState();
-    const info = [];
+    let info = [];
 
     const stepRoom = () => {
         if(room === null){
